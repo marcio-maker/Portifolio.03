@@ -183,17 +183,85 @@ window.addEventListener('resize', resizeCanvas);
 // Update particle colors based on theme
 function updateParticlesForTheme(theme) {
     currentTheme = theme;
-    // Redraw particles with new theme colors
     updateParticles();
 }
 
-// --- Existing Project Rendering Functions ---
+// --- Logo Particle Animation ---
+function initLogoAnimation() {
+    const logo = document.querySelector('.logo');
+    if (!logo) {
+        console.warn('Logo element not found.');
+        return;
+    }
+
+    let logoParticles = [];
+    function createLogoParticles() {
+        logoParticles = [];
+        for (let i = 0; i < 8; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'logo-particle';
+            logo.parentElement.appendChild(particle);
+            logoParticles.push(particle);
+            gsap.set(particle, {
+                position: 'absolute',
+                width: '4px',
+                height: '4px',
+                borderRadius: '50%',
+                background: 'var(--color-accent)',
+                x: logo.offsetWidth / 2,
+                y: logo.offsetHeight / 2,
+                opacity: 0,
+                zIndex: 1
+            });
+        }
+    }
+
+    const animateParticles = () => {
+        if (logoParticles.length === 0) createLogoParticles();
+        logoParticles.forEach((particle, i) => {
+            const angle = (i / logoParticles.length) * Math.PI * 2;
+            const distance = 20 + Math.random() * 15;
+            gsap.to(particle, {
+                x: Math.cos(angle) * distance + logo.offsetWidth / 2,
+                y: Math.sin(angle) * distance + logo.offsetHeight / 2,
+                opacity: 0.8,
+                duration: 0.8,
+                delay: i * 0.05,
+                ease: 'elastic.out(1, 0.5)'
+            });
+        });
+        console.log('Logo particles animated on mouseenter');
+    };
+
+    logo.addEventListener('mouseenter', animateParticles);
+    logo.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        animateParticles();
+    });
+
+    logo.addEventListener('mouseleave', () => {
+        logoParticles.forEach((particle) => {
+            gsap.to(particle, {
+                x: logo.offsetWidth / 2,
+                y: logo.offsetHeight / 2,
+                opacity: 0,
+                duration: 0.5,
+                ease: 'power2.out',
+                onComplete: () => particle.remove()
+            });
+        });
+        logoParticles = [];
+        console.log('Logo particles reset on mouseleave');
+    });
+}
+
+// --- Project Rendering Functions ---
 function renderDesignProjects(projects) {
     const container = document.getElementById('designProjects');
     if (!container) return;
     projects.forEach(project => {
         const card = document.createElement('div');
-        card.className = 'project-card';
+        card.className = 'project-card glass-card';
         card.innerHTML = `
             <div class="project-image">
                 <img src="${project.image}" alt="${project.title}">
@@ -218,7 +286,7 @@ function renderCodeProjects(projects) {
         if (!container) return;
         projects[category].forEach(project => {
             const card = document.createElement('div');
-            card.className = 'code-project';
+            card.className = 'code-project glass-card';
             card.innerHTML = `
                 <div class="code-preview">
                     <div class="browser-mockup">
@@ -241,8 +309,8 @@ function renderCodeProjects(projects) {
                         ${project.tech.map(tech => `<span class="tech-item">${tech}</span>`).join('')}
                     </div>
                     <div class="code-links">
-                        <a href="${project.github}" class="code-link secondary-link">GitHub</a>
-                        <a href="${project.demo}" class="code-link primary-link">Demo</a>
+                        <a href="${project.github}" class="code-link secondary-link" target="_blank" rel="noopener">GitHub</a>
+                        <a href="${project.demo}" class="code-link primary-link" target="_blank" rel="noopener">Demo</a>
                     </div>
                 </div>
             `;
@@ -256,25 +324,24 @@ function createInfiniteCarousel() {
     if (!track) return;
     const cards = track.querySelectorAll('.project-card');
     if (!cards.length) return;
-    const cloneCount = Math.ceil(window.innerWidth / (350 + 32)) + 1;
+    const cardWidth = 350 + 32;
+    const cloneCount = Math.ceil(window.innerWidth / cardWidth) + 1;
     for (let i = 0; i < cloneCount; i++) {
-        cards.forEach(card => {
-            const clone = card.cloneNode(true);
-            track.appendChild(clone);
-        });
+        cards.forEach(card => track.appendChild(card.cloneNode(true)));
     }
     let scrollPos = 0;
     function animateCarousel() {
         scrollPos -= 0.5;
-        if (scrollPos <= -(cards.length * (350 + 32))) {
+        if (scrollPos <= -(cards.length * cardWidth)) {
             scrollPos = 0;
         }
         track.style.transform = `translateX(${scrollPos}px)`;
-        requestAnimationFrame(animateCarousel);
+        if (track.isConnected) requestAnimationFrame(animateCarousel);
     }
     animateCarousel();
 }
 
+// --- Tabs Initialization ---
 function initTabs() {
     const tabs = document.querySelectorAll('.tab-btn');
     const contents = document.querySelectorAll('.tabs-content');
@@ -285,11 +352,9 @@ function initTabs() {
             tab.classList.add('active');
             const activeContent = document.getElementById(tab.dataset.tab);
             activeContent.classList.add('active');
-
-            // Trigger animations for code projects in the active tab
             if (typeof gsap !== 'undefined') {
                 gsap.from(activeContent.querySelectorAll('.code-project'), {
-                    x: (index) => (index % 2 === 0 ? -50 : 50), // Alternate left/right
+                    x: (index) => (index % 2 === 0 ? -50 : 50),
                     opacity: 0,
                     duration: 1,
                     ease: 'power3.out',
@@ -300,10 +365,9 @@ function initTabs() {
     });
 }
 
-// Scroll animation observer
+// --- Scroll Animations ---
 function initScrollAnimations() {
     const animatedElements = document.querySelectorAll('.animate-on-scroll');
-    
     if ('IntersectionObserver' in window) {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -312,49 +376,33 @@ function initScrollAnimations() {
                     observer.unobserve(entry.target);
                 }
             });
-        }, {
-            threshold: 0.15
-        });
-        
-        animatedElements.forEach(element => {
-            observer.observe(element);
-        });
+        }, { threshold: 0.15 });
+        animatedElements.forEach(element => observer.observe(element));
     } else {
-        // Fallback for browsers that don't support IntersectionObserver
-        animatedElements.forEach(element => {
-            element.classList.add('visible');
-        });
+        animatedElements.forEach(element => element.classList.add('visible'));
     }
 }
 
-// Custom cursor
+// --- Custom Cursor ---
 function initCustomCursor() {
     const cursor = document.querySelector('.cursor');
     const cursorFollower = document.querySelector('.cursor-follower');
-    
     if (!cursor || !cursorFollower) return;
-    
     document.addEventListener('mousemove', (e) => {
         cursor.style.left = e.clientX + 'px';
         cursor.style.top = e.clientY + 'px';
-        
-        // Delayed follower effect
         setTimeout(() => {
             cursorFollower.style.left = e.clientX + 'px';
             cursorFollower.style.top = e.clientY + 'px';
         }, 100);
     });
-    
-    // Cursor effects on interactive elements
     const interactiveElements = document.querySelectorAll('a, button, .project-card, .service-card, .contact-link');
-    
     interactiveElements.forEach(element => {
         element.addEventListener('mouseenter', () => {
             cursor.style.transform = 'translate(-50%, -50%) scale(1.5)';
             cursorFollower.style.width = '60px';
             cursorFollower.style.height = '60px';
         });
-        
         element.addEventListener('mouseleave', () => {
             cursor.style.transform = 'translate(-50%, -50%) scale(1)';
             cursorFollower.style.width = '40px';
@@ -363,160 +411,98 @@ function initCustomCursor() {
     });
 }
 
-// Back to top button
+// --- Back to Top Button ---
 function initBackToTopButton() {
     const backToTopButton = document.getElementById('back-to-top');
     if (!backToTopButton) return;
-    
     window.addEventListener('scroll', () => {
-        if (window.scrollY > 300) {
-            backToTopButton.style.display = 'flex';
-            setTimeout(() => {
-                backToTopButton.style.opacity = '1';
-            }, 10);
-        } else {
-            backToTopButton.style.opacity = '0';
-            setTimeout(() => {
-                backToTopButton.style.display = 'none';
-            }, 300);
-        }
+        backToTopButton.style.display = window.scrollY > 300 ? 'flex' : 'none';
+        backToTopButton.style.opacity = window.scrollY > 300 ? '1' : '0';
     });
-    
     backToTopButton.addEventListener('click', () => {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 }
 
-// Mobile menu toggle
+// --- Mobile Menu ---
 function initMobileMenu() {
     const menuToggle = document.querySelector('.menu-toggle');
     const navLinks = document.querySelector('.nav-links');
-    
     if (!menuToggle || !navLinks) return;
-    
     menuToggle.addEventListener('click', () => {
-        menuToggle.classList.toggle('active');
-        navLinks.classList.toggle('active');
+        const isActive = menuToggle.classList.toggle('active');
+        navLinks.classList.toggle('active', isActive);
+        document.body.style.overflow = isActive ? 'hidden' : '';
     });
-    
-    // Close menu when clicking on a link
-    const links = navLinks.querySelectorAll('a');
-    links.forEach(link => {
+    navLinks.querySelectorAll('a').forEach(link => {
         link.addEventListener('click', () => {
             menuToggle.classList.remove('active');
             navLinks.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    });
+    document.addEventListener('click', (e) => {
+        if (!navLinks.contains(e.target) && !menuToggle.contains(e.target) && navLinks.classList.contains('active')) {
+            menuToggle.classList.remove('active');
+            navLinks.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+}
+
+// --- Button Animations ---
+function initButtonAnimations() {
+    document.querySelectorAll('.btn').forEach(button => {
+        const glow = document.createElement('div');
+        glow.classList.add('btn-glow');
+        button.appendChild(glow);
+        button.addEventListener('mouseenter', () => {
+            gsap.to(button, { scale: 1.05, duration: 0.3, ease: 'power2.out' });
+            gsap.to(glow, { opacity: 0.8, duration: 0.5, ease: 'power2.out' });
+        });
+        button.addEventListener('mouseleave', () => {
+            gsap.to(button, { scale: 1, duration: 0.3, ease: 'power2.out' });
+            gsap.to(glow, { opacity: 0, duration: 0.5, ease: 'power2.out' });
+        });
+        button.addEventListener('click', () => {
+            gsap.to(button, { scale: 0.95, duration: 0.2, yoyo: true, repeat: 1 });
         });
     });
 }
 
+// --- Project Data ---
 const designProjects = [
-    {
-        title: 'Identidade Visual',
-        description: 'Desenvolvimento de marca completa para startup de tecnologia.',
-        image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-        tags: ['Branding', 'UI/UX']
-    },
-    {
-        title: 'App Financeiro',
-        description: 'Design de interface para aplicativo de gestão financeira.',
-        image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-        tags: ['UI/UX', 'Mobile']
-    },
-    {
-        title: 'E-commerce',
-        description: 'Redesign completo de plataforma de comércio eletrônico.',
-        image: 'https://images.unsplash.com/photo-1661956602116-aa6865609028?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-        tags: ['Web Design', 'UX Research']
-    },
-    {
-        title: 'Dashboard Analytics',
-        description: 'Interface para visualização de dados e métricas.',
-        image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-        tags: ['UI/UX', 'Data Viz']
-    },
-    {
-        title: 'Design System',
-        description: 'Sistema de design completo para produto SaaS.',
-        image: 'https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-        tags: ['Design System', 'UI/UX']
-    },
-    {
-        title: 'App de Saúde',
-        description: 'Interface para aplicativo de monitoramento de saúde.',
-        image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-        tags: ['Mobile', 'UI/UX']
-    }
+    { title: 'Identidade Visual', description: 'Desenvolvimento de marca completa para startup de tecnologia.', image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=1000&q=80', tags: ['Branding', 'UI/UX'] },
+    { title: 'App Financeiro', description: 'Design de interface para aplicativo de gestão financeira.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1000&q=80', tags: ['UI/UX', 'Mobile'] },
+    { title: 'E-commerce', description: 'Redesign completo de plataforma de comércio eletrônico.', image: 'https://images.unsplash.com/photo-1661956602116-aa6865609028?auto=format&fit=crop&w=1000&q=80', tags: ['Web Design', 'UX Research'] },
+    { title: 'Dashboard Analytics', description: 'Interface para visualização de dados e métricas.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1000&q=80', tags: ['UI/UX', 'Data Viz'] },
+    { title: 'Design System', description: 'Sistema de design completo para produto SaaS.', image: 'https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?auto=format&fit=crop&w=1000&q=80', tags: ['Design System', 'UI/UX'] },
+    { title: 'App de Saúde', description: 'Interface para aplicativo de monitoramento de saúde.', image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1000&q=80', tags: ['Mobile', 'UI/UX'] }
 ];
 
 const codeProjects = {
     web: [
-        {
-            title: 'Plataforma E-commerce',
-            description: 'Desenvolvimento completo de plataforma de comércio eletrônico com React, Node.js e MongoDB. Implementação de carrinho de compras, pagamentos e painel administrativo.',
-            image: 'https://images.unsplash.com/photo-1661956602116-aa6865609028?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-            tech: ['React', 'Node.js', 'MongoDB', 'Express'],
-            github: 'https://github.com/seu-usuario/ecommerce-plataforma',
-            demo: 'https://demo.ecommerce-plataforma.com'
-        },
-        {
-            title: 'Dashboard Analytics',
-            description: 'Painel de visualização de dados com gráficos interativos e filtros avançados. Integração com APIs de dados e exportação de relatórios.',
-            image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-            tech: ['Vue.js', 'D3.js', 'Firebase', 'Tailwind CSS'],
-            github: 'https://github.com/seu-usuario/dashboard-analytics',
-            demo: 'https://demo.dashboard-analytics.com'
-        }
+        { title: 'Plataforma E-commerce', description: 'Desenvolvimento completo de plataforma de comércio eletrônico com React, Node.js e MongoDB.', image: 'https://images.unsplash.com/photo-1661956602116-aa6865609028?auto=format&fit=crop&w=1000&q=80', tech: ['React', 'Node.js', 'MongoDB', 'Express'], github: 'https://github.com/marcio-maker', demo: 'https://demo.ecommerce-plataforma.com' },
+        { title: 'Dashboard Analytics', description: 'Painel de visualização de dados com gráficos interativos e filtros avançados.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1000&q=80', tech: ['Vue.js', 'D3.js', 'Firebase', 'Tailwind CSS'], github: 'https://github.com/marcio-maker', demo: 'https://demo.dashboard-analytics.com' }
     ],
     mobile: [
-        {
-            title: 'App de Fitness',
-            description: 'Aplicativo móvel para acompanhamento de treinos e nutrição. Recursos de progresso, lembretes e integração com dispositivos wearable.',
-            image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-            tech: ['React Native', 'Redux', 'Firebase', 'Expo'],
-            github: 'https://github.com/seu-usuario/fitness-app',
-            demo: 'https://demo.fitness-app.com'
-        },
-        {
-            title: 'App de Finanças',
-            description: 'Aplicativo para controle financeiro pessoal com categorização automática de gastos e visualização de relatórios.',
-            image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-            tech: ['Flutter', 'Dart', 'SQLite', 'Provider'],
-            github: 'https://github.com/seu-usuario/finance-app',
-            demo: 'https://demo.finance-app.com'
-        }
+        { title: 'App de Fitness', description: 'Aplicativo móvel para acompanhamento de treinos e nutrição.', image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1000&q=80', tech: ['React Native', 'Redux', 'Firebase', 'Expo'], github: 'https://github.com/marcio-maker', demo: 'https://demo.fitness-app.com' },
+        { title: 'App de Finanças', description: 'Aplicativo para controle financeiro pessoal com categorização automática.', image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1000&q=80', tech: ['Flutter', 'Dart', 'SQLite', 'Provider'], github: 'https://github.com/marcio-maker', demo: 'https://demo.finance-app.com' }
     ],
     outros: [
-        {
-            title: 'Biblioteca de Animações',
-            description: 'Biblioteca open source para animações de interface com foco em performance e facilidade de uso.',
-            image: 'https://images.unsplash.com/photo-1558655146-9f40138edfeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-            tech: ['JavaScript', 'TypeScript', 'GSAP', 'Webpack'],
-            github: 'https://github.com/seu-usuario/animation-library',
-            demo: 'https://demo.animation-library.com'
-        },
-        {
-            title: 'CLI para Automação',
-            description: 'Ferramenta de linha de comando para automação de tarefas de desenvolvimento e deploy.',
-            image: 'https://images.unsplash.com/photo-1629654297299-c8506221ca97?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-            tech: ['Node.js', 'Commander.js', 'Shell Script', 'Docker'],
-            github: 'https://github.com/seu-usuario/automation-cli',
-            demo: 'https://demo.automation-cli.com'
-        }
+        { title: 'Biblioteca de Animações', description: 'Biblioteca open source para animações de interface.', image: 'https://images.unsplash.com/photo-1558655146-9f40138edfeb?auto=format&fit=crop&w=1000&q=80', tech: ['JavaScript', 'TypeScript', 'GSAP', 'Webpack'], github: 'https://github.com/marcio-maker', demo: 'https://demo.animation-library.com' },
+        { title: 'CLI para Automação', description: 'Ferramenta de linha de comando para automação de tarefas.', image: 'https://images.unsplash.com/photo-1629654297299-c8506221ca97?auto=format&fit=crop&w=1000&q=80', tech: ['Node.js', 'Commander.js', 'Shell Script', 'Docker'], github: 'https://github.com/marcio-maker', demo: 'https://demo.automation-cli.com' }
     ]
 };
 
+// --- Main Initialization ---
 document.addEventListener('DOMContentLoaded', () => {
-    // Debug GSAP and ScrollTrigger loading
+    // GSAP and ScrollTrigger validation
     if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
-        console.error('GSAP or ScrollTrigger not loaded. Animations will not work.');
+        console.error('GSAP or ScrollTrigger not loaded.');
     } else {
-        console.log('GSAP and ScrollTrigger loaded successfully.');
+        console.log('GSAP and ScrollTrigger loaded.');
         gsap.registerPlugin(ScrollTrigger);
-        
-        // GSAP animations
         gsap.from('.split-half', {
             opacity: 0,
             y: 50,
@@ -524,13 +510,9 @@ document.addEventListener('DOMContentLoaded', () => {
             stagger: 0.3,
             ease: 'power3.out',
             onComplete: () => {
-                document.querySelectorAll('.split-half').forEach(half => {
-                    half.classList.add('active');
-                });
+                document.querySelectorAll('.split-half').forEach(half => half.classList.add('active'));
             }
         });
-        
-        // Scroll animations
         gsap.utils.toArray('.section').forEach(section => {
             gsap.from(section.querySelector('.section-title'), {
                 scrollTrigger: {
@@ -550,15 +532,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeToggle = document.querySelector('.theme-toggle');
     if (themeToggle) {
         themeToggle.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            const newTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', newTheme);
             updateParticlesForTheme(newTheme);
+            localStorage.setItem('theme', newTheme);
         });
-    } else {
-        console.warn('Theme toggle element not found.');
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateParticlesForTheme(savedTheme);
+        }
     }
-    
+
     // Initialize components
     if (canvas) resizeCanvas();
     renderDesignProjects(designProjects);
@@ -568,60 +553,17 @@ document.addEventListener('DOMContentLoaded', () => {
     initCustomCursor();
     initBackToTopButton();
     initMobileMenu();
-    
-    // Add active class to hero section for initial animation
+    initButtonAnimations();
+    initLogoAnimation();
+
+    // Header scroll effect
+    window.addEventListener('scroll', () => {
+        const header = document.querySelector('.header');
+        header.classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // Initial hero animation
     setTimeout(() => {
-        document.querySelectorAll('.split-half').forEach(half => {
-            half.classList.add('active');
-        });
+        document.querySelectorAll('.split-half').forEach(half => half.classList.add('active'));
     }, 500);
-});
-document.querySelectorAll('.btn').forEach(button => {
-  // Create glow element
-  const glow = document.createElement('div');
-  glow.classList.add('btn-glow');
-  button.appendChild(glow);
-  
-  // GSAP hover animation
-  button.addEventListener('mouseenter', () => {
-    gsap.to(button, {
-      scale: 1.05,
-      duration: 0.3,
-      ease: 'power2.out'
-    });
-    
-    gsap.to(glow, {
-      opacity: 0.8,
-      duration: 0.5,
-      ease: 'power2.out'
-    });
-  });
-  
-  button.addEventListener('mouseleave', () => {
-    gsap.to(button, {
-      scale: 1,
-      duration: 0.3,
-      ease: 'power2.out'
-    });
-    
-    gsap.to(glow, {
-      opacity: 0,
-      duration: 0.5,
-      ease: 'power2.out'
-    });
-  });
-  
-  // Click effect
-  button.addEventListener('click', () => {
-    gsap.to(button, {
-      scale: 0.95,
-      duration: 0.2,
-      yoyo: true,
-      repeat: 1
-    });
-  });
-});
-window.addEventListener('scroll', () => {
-  const header = document.querySelector('.header');
-  header.classList.toggle('scrolled', window.scrollY > 10);
 });

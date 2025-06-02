@@ -1,240 +1,202 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="pt-BR" data-theme="dark">
 <head>
-    <!-- Define character encoding for proper text rendering -->
-    <meta name="description" content="Portfolio showcasing UX design and coding projects">
     <meta charset="UTF-8">
-    <!-- Ensure responsive design with viewport settings -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Page title displayed in browser tab -->
-    <title>Portfolio</title>
-    <!-- Import Google Fonts for typography (Playfair Display and Roboto) -->
+    <meta name="description" content="Portfolio showcasing UX design and coding projects">
+    <title>Marcio Maker - Portfolio</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <!-- Import Font Awesome for icons used in the UI -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <!-- Link to custom stylesheet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eo2Edzl69IQkTb8xKYfd1Y0XgH08Xm3p+7dDsmbM0IddCNiiBJA0fCzrrZIJ1g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha512-onMTR1v+zl3B3W7cLEbVjeMmu1DVs9q8+cdTY0pIvNAx3nS3BwrLV1b3Hmh4h0N3C0wscVxxMnByNI3p/p0x0gQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
-    <!-- Canvas for rendering interactive particle background -->
     <canvas id="particleCanvas"></canvas>
-    <!-- Custom cursor elements for enhanced user interaction -->
     <div class="cursor"></div>
     <div class="cursor-follower"></div>
 
-    <!-- Header with navigation -->
     <header class="header">
-        <nav class="nav container">
-            <!-- Logo or brand identifier -->
-            <div class="logo futuristic-text">MM</div>
-            <!-- Navigation links for desktop view -->
-            <div class="nav-links">
-                <a href="#home" class="nav-link">Início</a>
-                <a href="#about" class="nav-link">Sobre</a>
-                <a href="#services" class="nav-link">Serviços</a>
-                <a href="#projects" class="nav-link">Projetos</a>
-                <a href="#contact" class="nav-link">Contato</a>
-                <a href="cv.pdf" class="nav-link cv-link" target="_blank">
-                    CV <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                </a>
-            </div>
-            <!-- Theme toggle button for switching between light and dark modes -->
-            <button class="theme-toggle" aria-label="Toggle theme">
-                <i class="fa-solid fa-moon moon"></i>
-                <i class="fa-solid fa-sun sun"></i>
-            </button>
-            <!-- Mobile menu toggle button -->
-            <button class="menu-toggle" aria-label="Toggle menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-        </nav>
+        <div class="container">
+            <nav class="nav">
+                <div class="logo-container">
+                    <a href="#home" class="logo futuristic-text">MM</a>
+                    <div class="logo-glow"></div>
+                </div>
+                <button class="menu-toggle" aria-label="Toggle navigation menu" aria-controls="nav-links">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="nav-links" id="nav-links">
+                    <a href="#home" class="nav-link">Início</a>
+                    <a href="#about" class="nav-link">Sobre</a>
+                    <a href="#services" class="nav-link">Serviços</a>
+                    <a href="#projects" class="nav-link">Projetos</a>
+                    <a href="#contact" class="nav-link">Contato</a>
+                    <a href="cv.pdf" class="nav-link cv-link" target="_blank" rel="noopener">
+                        CV <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <i class="fa-solid fa-moon moon"></i>
+                    <i class="fa-solid fa-sun sun"></i>
+                </button>
+            </nav>
+        </div>
     </header>
 
-    <!-- Hero section with split design for visual impact -->
-    <section id="home" class="hero split-container">
-        <!-- Left half of the hero section -->
-        <div class="split-half">
-            <div class="split-photo-container">
-                <div class="split-photo left-photo"></div>
-                <div class="split-overlay"></div>
+    <main>
+        <section id="home" class="hero split-container">
+            <div class="split-half">
+                <div class="split-photo-container">
+                    <div class="split-photo left-photo"></div>
+                    <div class="split-overlay"></div>
+                </div>
+                <div class="split-content">
+                    <h1 class="split-title futuristic-heading">UX Design <span>Criativo</span></h1>
+                    <p class="split-subtitle">Criando experiências visuais únicas</p>
+                    <a href="#projects" class="split-cta btn">Explorar Trabalhos</a>
+                </div>
             </div>
-            <div class="split-content">
-                <h1 class="split-title futuristic-heading">UX Design <span>Criativo</span></h1>
-                <p class="split-subtitle">Criando experiências visuais únicas</p>
-                <a href="#projects" class="split-cta glow-button">Explorar Trabalhos</a>
+            <div class="split-half">
+                <div class="split-photo-container">
+                    <div class="split-photo right-photo"></div>
+                    <div class="split-overlay"></div>
+                </div>
+                <div class="split-content">
+                    <h1 class="split-title futuristic-heading">Código <span>Inovador</span></h1>
+                    <p class="split-subtitle">Construindo soluções robustas</p>
+                    <a href="#projects" class="split-cta btn">Ver Projetos</a>
+                </div>
             </div>
-        </div>
-        <!-- Right half of the hero section -->
-        <div class="split-half">
-            <div class="split-photo-container">
-                <div class="split-photo right-photo"></div>
-                <div class="split-overlay"></div>
+            <div class="scroll-indicator">
+                <span>Rolar</span>
+                <div class="scroll-arrow"></div>
             </div>
-            <div class="split-content">
-                <h1 class="split-title futuristic-heading">Código <span>Inovador</span></h1>
-                <p class="split-subtitle">Construindo soluções robustas</p>
-                <a href="#projects" class="split-cta glow-button">Ver Projetos</a>
-            </div>
-        </div>
-        <!-- Scroll indicator to prompt user to scroll down -->
-        <div class="scroll-indicator">
-            <span>Rolar</span>
-            <div class="scroll-arrow"></div>
-        </div>
-    </section>
+        </section>
 
-    <!-- About section with personal info and skills -->
-    <section id="about" class="section about animate-on-scroll">
-        <div class="container">
-            <h2 class="section-title futuristic-heading">Sobre Mim</h2>
-            <div class="about-grid">
-                <div class="about-content glass-card">
-                    <!-- Brief introduction about the portfolio owner -->
-                    <p>Sou um designer e desenvolvedor apaixonado, focado em criar experiências de usuário perfeitas e aplicações robustas. Meu trabalho une criatividade e conhecimento técnico para entregar soluções impactantes.</p>
-                    <!-- Design skills section -->
-                    <div class="skills">
-                        <div class="skill-category">
-                            <h3>Habilidades de Design</h3>
-                            <div class="skill-tags">
-                                <span>UI/UX Design</span>
-                                <span>Branding</span>
-                                <span>Prototipagem</span>
-                                <span>Figma</span>
+        <section id="about" class="section about animate-on-scroll">
+            <div class="container">
+                <h2 class="section-title futuristic-heading">Sobre Mim</h2>
+                <div class="about-grid">
+                    <div class="about-content glass-card">
+                        <p>Sou um designer e desenvolvedor apaixonado, focado em criar experiências de usuário perfeitas e aplicações robustas. Meu trabalho une criatividade e conhecimento técnico para entregar soluções impactantes.</p>
+                        <div class="skills">
+                            <div class="skill-category">
+                                <h3>Habilidades de Design</h3>
+                                <div class="skill-tags">
+                                    <span>UI/UX Design</span>
+                                    <span>Branding</span>
+                                    <span>Prototipagem</span>
+                                    <span>Figma</span>
+                                </div>
                             </div>
-                        </div>
-                        <!-- Development skills section -->
-                        <div class="skill-category">
-                            <h3>Habilidades de Desenvolvimento</h3>
-                            <div class="skill-tags">
-                                <span>JavaScript</span>
-                                <span>React</span>
-                                <span>Three.js</span>
-                                <span>HTML/CSS</span>
-                                <span>Git</span>
-                                <span>GSAP</span>
-                                <span>Python</span>
+                            <div class="skill-category">
+                                <h3>Habilidades de Desenvolvimento</h3>
+                                <div class="skill-tags">
+                                    <span>JavaScript</span>
+                                    <span>React</span>
+                                    <span>Three.js</span>
+                                    <span>HTML/CSS</span>
+                                    <span>Git</span>
+                                    <span>GSAP</span>
+                                    <span>Python</span>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <div class="about-image">
+                        <div class="image-container gradient-border">
+                            <img src="image-min.gif" alt="Imagem 3D de perfil" class="about-gif">
+                        </div>
+                    </div>
                 </div>
-                <!-- Video container for about section -->
-                <div class="about-image">
-                  <div class="image-container gradient-border">
-                   <img src="image-min.gif" alt="3D Imagem" class="about-gif">
-                  </div>
+            </div>
+        </section>
+
+        <section id="services" class="section services animate-on-scroll">
+            <div class="container">
+                <h2 class="section-title futuristic-heading">Serviços</h2>
+                <div class="services-grid">
+                    <div class="service-card glass-card">
+                        <div class="service-card-content">
+                            <i class="fa-solid fa-paintbrush service-icon"></i>
+                            <h3>UI/UX Design</h3>
+                            <p>Criando interfaces intuitivas e atraentes.</p>
+                        </div>
+                    </div>
+                    <div class="service-card glass-card">
+                        <div class="service-card-content">
+                            <i class="fa-solid fa-code service-icon"></i>
+                            <h3>Desenvolvimento Web</h3>
+                            <p>Construindo aplicações web responsivas e performáticas.</p>
+                        </div>
+                    </div>
+                    <div class="service-card glass-card">
+                        <div class="service-card-content">
+                            <i class="fa-solid fa-mobile-alt service-icon"></i>
+                            <h3>Aplicativos Mobile</h3>
+                            <p>Desenvolvendo soluções mobile multiplataforma.</p>
+                        </div>
+                    </div>
                 </div>
+            </div>
+        </section>
+
+        <section id="projects" class="section projects animate-on-scroll">
+            <div class="container">
+                <h2 class="section-title futuristic-heading">Projetos de Design</h2>
+                <div class="carousel-container">
+                    <div class="carousel-track" id="designProjects"></div>
+                </div>
+                <h2 class="section-title futuristic-heading">Projetos de Código</h2>
+                <div class="tabs-nav">
+                    <button class="tab-btn active" data-tab="web">Web</button>
+                    <button class="tab-btn" data-tab="mobile">Mobile</button>
+                    <button class="tab-btn" data-tab="outros">Outros</button>
+                </div>
+                <div class="tabs-content-container">
+                    <div class="tabs-content active" id="web"></div>
+                    <div class="tabs-content" id="mobile"></div>
+                    <div class="tabs-content" id="outros"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="section contact animate-on-scroll">
+            <div class="container">
+                <h2 class="section-title futuristic-heading">Contato</h2>
+                <div class="contact-links">
+                    <div class="contact-link glass-card">
+                        <span class="link-label">Email</span>
+                        <a href="mailto:ma.gemelli2020@gmail.com" class="link-value">ma.gemelli2020@gmail.com</a>
+                    </div>
+                    <div class="contact-link glass-card">
+                        <span class="link-label">LinkedIn</span>
+                        <a href="https://www.linkedin.com/in/m%C3%A1rciogemelli/" target="_blank" rel="noopener" class="link-value">linkedin.com/in/márciogemelli</a>
+                    </div>
+                    <div class="contact-link glass-card">
+                        <span class="link-label">GitHub</span>
+                        <a href="https://github.com/marcio-maker" target="_blank" rel="noopener" class="link-value">github.com/marcio-maker</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-text">© 2025 Marcio Maker</div>
+            <div class="footer-links social-links">
+                <a href="https://github.com/marcio-maker" target="_blank" rel="noopener"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/m%C3%A1rciogemelli/" target="_blank" rel="noopener"><i class="fab fa-linkedin"></i></a>
+                <a href="https://www.behance.net/0faa6a9e" target="_blank" rel="noopener"><i class="fab fa-behance"></i></a>
             </div>
         </div>
-    </section>
+    </footer>
 
-    <!-- Services section showcasing offered services -->
-    <section id="services" class="section services animate-on-scroll">
-        <div class="container">
-            <h2 class="section-title futuristic-heading">Serviços</h2>
-            <div class="services-grid">
-                <!-- UI/UX Design service card -->
-                <div class="service-card glass-card">
-                    <i class="fa-solid fa-paintbrush"></i>
-                    <h3>UI/UX Design</h3>
-                    <p>Criando interfaces intuitivas e atraentes.</p>
-                </div>
-                <!-- Web Development service card -->
-                <div class="service-card glass-card">
-                    <i class="fa-solid fa-code"></i>
-                    <h3>Desenvolvimento Web</h3>
-                    <p>Construindo aplicações web responsivas e performáticas.</p>
-                </div>
-                <!-- Mobile Apps service card -->
-                <div class="service-card glass-card">
-                    <i class="fa-solid fa-mobile"></i>
-                    <h3>Aplicativos Mobile</h3>
-                    <p>Desenvolvendo soluções mobile multiplataforma.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Projects section with design and code projects -->
-    <section id="projects" class="section projects animate-on-scroll">
-        <div class="container">
-            <h2 class="section-title futuristic-heading">Projetos de Design</h2>
-            <!-- Carousel for design projects -->
-            <div class="carousel-container">
-                <div class="carousel-track" id="designProjects"></div>
-            </div>
-            <h2 class="section-title futuristic-heading">Projetos de Código</h2>
-            <!-- Tabs for organizing code projects by category -->
-            <div class="tabs-nav">
-                <button class="tab-btn active" data-tab="web">Web</button>
-                <button class="tab-btn" data-tab="mobile">Mobile</button>
-                <button class="tab-btn" data-tab="outros">Outros</button>
-            </div>
-            <div class="tabs-content-container">
-                <!-- Web projects tab content -->
-                <div class="tabs-content active" id="web"></div>
-                <!-- Mobile projects tab content -->
-                <div class="tabs-content" id="mobile"></div>
-                <!-- Other projects tab content -->
-                <div class="tabs-content" id="outros"></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact section with links to external profiles -->
-<section id="contact" class="section contact animate-on-scroll">
-  <div class="container">
-    <h2 class="section-title futuristic-heading">Contato</h2>
-    <div class="contact-links">
-      <!-- Email contact link -->
-      <div class="contact-link glass-card">
-        <span class="link-label">Email</span>
-        <a href="mailto:ma.gemelli2020@gmail.com" class="link-value">ma.gemelli2020@gmail.com</a>
-      </div>
-      <!-- LinkedIn contact link -->
-      <div class="contact-link glass-card">
-        <span class="link-label">LinkedIn</span>
-        <a href="https://www.linkedin.com/in/m%C3%A1rciogemelli/" target="_blank" rel="noopener" class="link-value">
-          linkedin.com/in/márciogemelli
-        </a>
-      </div>
-      <!-- GitHub contact link -->
-      <div class="contact-link glass-card">
-        <span class="link-label">GitHub</span>
-        <a href="https://github.com/marcio-maker" target="_blank" rel="noopener" class="link-value">
-          github.com/marcio-maker
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
-
-    <!-- Footer with copyright and social links -->
-<footer class="footer">
-    <div class="container footer-content">
-        <div class="footer-text">© 2025 Marcio Maker</div>
-        <div class="footer-links">
-            <a href="https://github.com/marcio-maker" target="_blank" rel="noopener">
-                <i class="fab fa-github"></i>
-            </a>
-            <a href="https://www.linkedin.com/in/m%C3%A1rciogemelli/" target="_blank" rel="noopener">
-                <i class="fab fa-linkedin"></i>
-            </a>
-            <a href="https://www.behance.net/0faa6a9e" target="_blank" rel="noopener">
-                <i class="fab fa-behance"></i>
-            </a>
-        </div>
-    </div>
-</footer>
-  
-    <!-- Back to top button -->
-    <button id="back-to-top" class="glow-button"><i class="fa-solid fa-arrow-up"></i></button>
-
-    <!-- External script for GSAP animations -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <!-- Custom JavaScript for interactivity -->
+    <button id="back-to-top" class="glow-button" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
     <script src="script.js"></script>
 </body>
 </html>
