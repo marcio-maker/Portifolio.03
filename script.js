@@ -214,7 +214,7 @@ function initLogoAnimation() {
                 zIndex: 1
             });
         }
-    }
+        console.log('Logo particles created:', logoParticles.length);}
 
     const animateParticles = () => {
         if (logoParticles.length === 0) createLogoParticles();
@@ -524,6 +524,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 y: 30,
                 duration: 0.8,
                 ease: 'power3.out'
+            });
+        });
+    }
+
+    // GSAP animation for testimonials
+    if (typeof gsap !== 'undefined') {
+        gsap.from('.testimonial', {
+            opacity: 0,
+            y: 40,
+            stagger: 0.15,
+            duration: 1,
+            ease: "power3.out"
+        });
+
+        // GSAP glow effect for icons
+        document.querySelectorAll('.icon-glow').forEach(icon => {
+            // Continuous pulsing glow
+            gsap.to(icon, {
+                boxShadow: "0 0 32px 8px var(--color-accent-glow)",
+                repeat: -1,
+                yoyo: true,
+                duration: 2.2,
+                ease: "power1.inOut"
+            });
+            // Extra glow on hover
+            icon.addEventListener('mouseenter', () => {
+                gsap.to(icon, { boxShadow: "0 0 48px 16px var(--color-accent-glow)", duration: 0.4 });
+            });
+            icon.addEventListener('mouseleave', () => {
+                gsap.to(icon, { boxShadow: "0 0 32px 8px var(--color-accent-glow)", duration: 0.6 });
             });
         });
     }
